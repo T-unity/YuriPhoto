@@ -11,6 +11,7 @@
 		64A16C7D2BC19ADC00EB6CB9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64A16C7C2BC19ADC00EB6CB9 /* ContentView.swift */; };
 		64A16C7F2BC19ADD00EB6CB9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64A16C7E2BC19ADD00EB6CB9 /* Assets.xcassets */; };
 		64A16C822BC19ADD00EB6CB9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64A16C812BC19ADD00EB6CB9 /* Preview Assets.xcassets */; };
+		64A16C892BC19BF700EB6CB9 /* UIImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64A16C882BC19BF700EB6CB9 /* UIImagePickerController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		64A16C7C2BC19ADC00EB6CB9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		64A16C7E2BC19ADD00EB6CB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		64A16C812BC19ADD00EB6CB9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		64A16C882BC19BF700EB6CB9 /* UIImagePickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImagePickerController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +54,7 @@
 			isa = PBXGroup;
 			children = (
 				64A16C7A2BC19ADC00EB6CB9 /* YuriPhotoApp.swift */,
+				64A16C882BC19BF700EB6CB9 /* UIImagePickerController.swift */,
 				64A16C7C2BC19ADC00EB6CB9 /* ContentView.swift */,
 				64A16C7E2BC19ADD00EB6CB9 /* Assets.xcassets */,
 				64A16C802BC19ADD00EB6CB9 /* Preview Content */,
@@ -139,6 +142,7 @@
 			files = (
 				64A16C7D2BC19ADC00EB6CB9 /* ContentView.swift in Sources */,
 				64A16C7B2BC19ADC00EB6CB9 /* YuriPhotoApp.swift in Sources */,
+				64A16C892BC19BF700EB6CB9 /* UIImagePickerController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,6 +271,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"YuriPhoto/Preview Content\"";
+				DEVELOPMENT_TEAM = J2525QN387;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -295,6 +300,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"YuriPhoto/Preview Content\"";
+				DEVELOPMENT_TEAM = J2525QN387;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
