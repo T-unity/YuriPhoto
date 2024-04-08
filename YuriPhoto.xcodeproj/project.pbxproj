@@ -19,7 +19,6 @@
 		64A16C7C2BC19ADC00EB6CB9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		64A16C7E2BC19ADD00EB6CB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		64A16C812BC19ADD00EB6CB9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		64C34BEA2BC41D56000DFD2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +51,6 @@
 		64A16C792BC19ADC00EB6CB9 /* YuriPhoto */ = {
 			isa = PBXGroup;
 			children = (
-				64C34BEA2BC41D56000DFD2E /* Info.plist */,
 				64A16C7A2BC19ADC00EB6CB9 /* YuriPhotoApp.swift */,
 				64A16C7C2BC19ADC00EB6CB9 /* ContentView.swift */,
 				64A16C7E2BC19ADD00EB6CB9 /* Assets.xcassets */,
@@ -273,7 +271,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YuriPhoto/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera";
+				INFOPLIST_KEY_NSCameraUsageDescription = "写真を撮影するためにこのアプリからカメラへのアクセスを許可してください。";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "撮影した写真を保存するためにはカメラロールへのアクセスが必要です";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -304,7 +303,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YuriPhoto/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera";
+				INFOPLIST_KEY_NSCameraUsageDescription = "写真を撮影するためにこのアプリからカメラへのアクセスを許可してください。";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "撮影した写真を保存するためにはカメラロールへのアクセスが必要です";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

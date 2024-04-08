@@ -66,15 +66,16 @@ struct CustomImagePicker: UIViewControllerRepresentable {
             self.parent = parent
             self.onImagePicked = onImagePicked
         }
-        
+
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             if let image = info[.originalImage] as? UIImage {
-                self.onImagePicked(image)
-                }
-            // 画像が選択された後の処理
+                parent.selectedImage = image
+                // 撮影した写真をカメラロールに保存
+                UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+            }
             parent.isPresented = false
         }
-        
+ 
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.isPresented = false
         }
