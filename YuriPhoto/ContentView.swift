@@ -13,11 +13,28 @@ struct ContentView: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.blue.opacity(0.3)) // 画像の背景を水色に設定
+            } else {
+                // 画像がない場合はデフォルトのビューを表示
+                Text("撮影した写真がここに表示されます")
+                    .foregroundColor(.gray)
+                    .padding()
+                    .background(Color.white) // テキストの背景を白に設定
             }
             
-            Button("写真を撮る") {
+            Button(action: {
                 isShowingImagePicker = true
+            }) {
+                Text("写真を撮る")
+                    .font(.title)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(LinearGradient(gradient: Gradient(colors: [Color.pink, Color.blue]), startPoint: .leading, endPoint: .trailing)) // グラデーション背景
+                    .cornerRadius(15)
+                    .shadow(radius: 10)
             }
+            .padding()
             .sheet(isPresented: $isShowingImagePicker) {
                 CustomImagePicker(isPresented: $isShowingImagePicker, selectedImage: $image, sourceType: .camera) { image in
                     self.image = image
@@ -36,6 +53,7 @@ struct ContentView: View {
                 secondaryButton: .cancel()
             )
         }
+        .background(Color.white) // アプリ全体の背景を白に設定
     }
 }
 
@@ -75,7 +93,7 @@ struct CustomImagePicker: UIViewControllerRepresentable {
             }
             parent.isPresented = false
         }
- 
+
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.isPresented = false
         }
