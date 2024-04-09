@@ -14,6 +14,7 @@
 		64C34BEC2BC4346E000DFD2E /* ImageDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C34BEB2BC4346E000DFD2E /* ImageDisplayView.swift */; };
 		64C34BEE2BC434A8000DFD2E /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C34BED2BC434A8000DFD2E /* ImagePicker.swift */; };
 		64C34BF02BC434C0000DFD2E /* ButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C34BEF2BC434C0000DFD2E /* ButtonStyle.swift */; };
+		64C34BF22BC597E9000DFD2E /* CustomCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C34BF12BC597E9000DFD2E /* CustomCameraView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		64C34BEB2BC4346E000DFD2E /* ImageDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDisplayView.swift; sourceTree = "<group>"; };
 		64C34BED2BC434A8000DFD2E /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		64C34BEF2BC434C0000DFD2E /* ButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyle.swift; sourceTree = "<group>"; };
+		64C34BF12BC597E9000DFD2E /* CustomCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCameraView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				64A16C7A2BC19ADC00EB6CB9 /* YuriPhotoApp.swift */,
 				64C34BEB2BC4346E000DFD2E /* ImageDisplayView.swift */,
 				64C34BEF2BC434C0000DFD2E /* ButtonStyle.swift */,
+				64C34BF12BC597E9000DFD2E /* CustomCameraView.swift */,
 				64C34BED2BC434A8000DFD2E /* ImagePicker.swift */,
 				64A16C7C2BC19ADC00EB6CB9 /* ContentView.swift */,
 				64A16C7E2BC19ADD00EB6CB9 /* Assets.xcassets */,
@@ -150,6 +153,7 @@
 				64C34BEE2BC434A8000DFD2E /* ImagePicker.swift in Sources */,
 				64A16C7D2BC19ADC00EB6CB9 /* ContentView.swift in Sources */,
 				64C34BF02BC434C0000DFD2E /* ButtonStyle.swift in Sources */,
+				64C34BF22BC597E9000DFD2E /* CustomCameraView.swift in Sources */,
 				64A16C7B2BC19ADC00EB6CB9 /* YuriPhotoApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -283,6 +287,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YuriPhoto/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "写真を撮影するためにこのアプリからカメラへのアクセスを許可してください。";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "撮影した写真を保存するためにはカメラロールへのアクセスが必要です";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -315,6 +320,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = YuriPhoto/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "写真を撮影するためにこのアプリからカメラへのアクセスを許可してください。";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "撮影した写真を保存するためにはカメラロールへのアクセスが必要です";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
