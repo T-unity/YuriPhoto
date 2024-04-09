@@ -22,7 +22,7 @@ struct ImageDisplayView: View {
                 Button("撮影を続ける") {
                     isImageSaved = false
                     self.image = nil
-                    isShowingImagePicker = false
+                    isShowingImagePicker = true  // カメラを再度起動する
                 }
                 .buttonStyle()
             }
