@@ -1,26 +1,30 @@
 import SwiftUI
 import AVFoundation
 
+// SwiftUIでUIViewを使えるようにするための構造体
 struct CustomCameraView: UIViewRepresentable {
+    // UIViewを継承したカスタムビュークラス。カメラ機能を実装しています。
     class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
-        private var captureSession: AVCaptureSession?
-        private let photoOutput = AVCapturePhotoOutput()
-        private var captureButton: UIButton?
-        private var capturedImage: UIImage?
-        private var imageView: UIImageView?
-        private var previewLayer: AVCaptureVideoPreviewLayer?
+        private var captureSession: AVCaptureSession?  // カメラのセッションを管理
+        private let photoOutput = AVCapturePhotoOutput()  // 写真の出力を管理
+        private var captureButton: UIButton?  // 撮影ボタン
+        private var capturedImage: UIImage?  // 撮影した画像を保持
+        private var imageView: UIImageView?  // 撮影した画像を表示するためのビュー
+        private var previewLayer: AVCaptureVideoPreviewLayer?  // カメラからの映像を表示するレイヤー
         
+        // 初期化処理
         override init(frame: CGRect) {
             super.init(frame: frame)
-            initializeSession()
-            setupCaptureButton()
-            setupImageView()
+            initializeSession()  // カメラセッションの初期化
+            setupCaptureButton()  // 撮影ボタンの設定
+            setupImageView()  // imageViewの設定
         }
-        
+
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
-        
+
+        // imageViewの設定
         private func setupImageView() {
             imageView = UIImageView(frame: self.bounds)
             imageView?.contentMode = .scaleAspectFit
@@ -31,6 +35,7 @@ struct CustomCameraView: UIViewRepresentable {
             }
         }
 
+        // 撮影ボタンの設定
         private func setupCaptureButton() {
             captureButton = UIButton(frame: CGRect(x: 0, y: 0, width: 70, height: 70))
             if let captureButton = captureButton {
@@ -44,6 +49,7 @@ struct CustomCameraView: UIViewRepresentable {
             }
         }
         
+        // レイアウト調整時の処理
         override func layoutSubviews() {
             super.layoutSubviews()
             imageView?.frame = self.bounds  // imageViewのフレームを更新
@@ -52,6 +58,7 @@ struct CustomCameraView: UIViewRepresentable {
         }
 
 
+        // カメラセッションの初期化
         private func initializeSession() {
             DispatchQueue.main.async {
                 self.captureSession = AVCaptureSession()
@@ -86,6 +93,7 @@ struct CustomCameraView: UIViewRepresentable {
             photoOutput.capturePhoto(with: settings, delegate: self)
         }
 
+        // 写真が撮影された後の処理
         func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
             guard let imageData = photo.fileDataRepresentation(),
                   let image = UIImage(data: imageData) else { return }
@@ -103,6 +111,7 @@ struct CustomCameraView: UIViewRepresentable {
             }
         }
 
+        // 撮影ボタンが押された時のアクション
         @objc func retakePhoto() {
             DispatchQueue.main.async {
                 self.imageView?.isHidden = true
@@ -124,14 +133,19 @@ struct CustomCameraView: UIViewRepresentable {
             }
         }
 
+        // 「ダウンロード」ボタンが押された時のアクション
         @objc func savePhoto() {
             guard let imageToSave = capturedImage else { return }
+            // 撮影した画像をフォトライブラリに保存する
             UIImageWriteToSavedPhotosAlbum(imageToSave, nil, nil, nil)
             
             DispatchQueue.main.async {
+                // 画像を非表示にし、カメラプレビューを再表示する
                 self.imageView?.isHidden = true
                 self.previewLayer?.isHidden = false
+                // カメラセッションを再開する
                 self.captureSession?.startRunning()
+                // ボタンのタイトルを「撮影」に戻し、アクションを撮影に設定する
                 self.captureButton?.setTitle("撮影", for: .normal)
                 self.captureButton?.removeTarget(self, action: #selector(self.savePhoto), for: .touchUpInside)
                 self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
@@ -139,9 +153,11 @@ struct CustomCameraView: UIViewRepresentable {
         }
     }
 
+    // UIViewRepresentableプロトコルのメソッド。UIViewを生成して返す。
     func makeUIView(context: Context) -> CameraUIView {
         return CameraUIView()
     }
 
+    // UIViewRepresentableプロトコルのメソッド。UIViewの状態を更新する。
     func updateUIView(_ uiView: CameraUIView, context: Context) {}
 }
