@@ -11,7 +11,6 @@
 		64A16C7D2BC19ADC00EB6CB9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64A16C7C2BC19ADC00EB6CB9 /* ContentView.swift */; };
 		64A16C7F2BC19ADD00EB6CB9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64A16C7E2BC19ADD00EB6CB9 /* Assets.xcassets */; };
 		64A16C822BC19ADD00EB6CB9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64A16C812BC19ADD00EB6CB9 /* Preview Assets.xcassets */; };
-		64C34BF22BC597E9000DFD2E /* CustomCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C34BF12BC597E9000DFD2E /* CustomCameraView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +19,6 @@
 		64A16C7C2BC19ADC00EB6CB9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		64A16C7E2BC19ADD00EB6CB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		64A16C812BC19ADD00EB6CB9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		64C34BF12BC597E9000DFD2E /* CustomCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCameraView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,7 +52,6 @@
 			isa = PBXGroup;
 			children = (
 				64A16C7A2BC19ADC00EB6CB9 /* YuriPhotoApp.swift */,
-				64C34BF12BC597E9000DFD2E /* CustomCameraView.swift */,
 				64A16C7C2BC19ADC00EB6CB9 /* ContentView.swift */,
 				64A16C7E2BC19ADD00EB6CB9 /* Assets.xcassets */,
 				64A16C802BC19ADD00EB6CB9 /* Preview Content */,
@@ -141,7 +138,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				64A16C7D2BC19ADC00EB6CB9 /* ContentView.swift in Sources */,
-				64C34BF22BC597E9000DFD2E /* CustomCameraView.swift in Sources */,
 				64A16C7B2BC19ADC00EB6CB9 /* YuriPhotoApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
