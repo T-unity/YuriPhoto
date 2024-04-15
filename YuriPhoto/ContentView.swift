@@ -38,59 +38,21 @@ struct CustomCameraView: UIViewRepresentable {
         private var capturedImage: UIImage?  // 撮影した画像を保持
         private var imageView: UIImageView?  // 撮影した画像を表示するためのビュー
         private var previewLayer: AVCaptureVideoPreviewLayer?  // カメラからの映像を表示するレイヤー
+
+        // コンポーネントの初期化に関する制御
+        // StoryboardやXIBからのビルドは不可
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
         
         // 初期化処理
+        // CameraUIViewクラスのインスタンスが作成される際に呼び出される
         override init(frame: CGRect) {
             super.init(frame: frame)
             initializeSession()  // カメラセッションの初期化
             setupCaptureButton()  // 撮影ボタンの設定
             setupImageView()  // imageViewの設定
         }
-        
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-        
-        // imageViewの設定
-        private func setupImageView() {
-            imageView = UIImageView(frame: self.bounds)
-            imageView?.contentMode = .scaleAspectFit
-            imageView?.isHidden = true
-            if let imageView = imageView {
-                self.addSubview(imageView)
-                //                print("ImageView added")  // デバッグ情報
-            }
-        }
-        
-        // 撮影ボタンの設定
-        private func setupCaptureButton() {
-            captureButton = UIButton(frame: CGRect(x: 0, y: 0, width: 70, height: 70))
-            if let captureButton = captureButton {
-                captureButton.backgroundColor = .white
-                captureButton.layer.cornerRadius = 35
-                captureButton.setTitle("撮影", for: .normal)
-                captureButton.setTitleColor(.black, for: .normal)
-                captureButton.addTarget(self, action: #selector(takePhoto), for: .touchUpInside)
-                self.addSubview(captureButton)
-                self.bringSubviewToFront(captureButton)
-            }
-        }
-        
-        // レイアウト調整時の処理
-        override func layoutSubviews() {
-            super.layoutSubviews()
-            
-            // カメラセッションの初期化をビューが表示される直前に行う
-            if self.captureSession == nil {
-                initializeSession()
-            }
-            
-            imageView?.frame = self.bounds  // imageViewのフレームを更新
-            captureButton?.center = CGPoint(x: self.bounds.midX, y: self.bounds.height - 100)
-            self.bringSubviewToFront(captureButton!)
-        }
-        
-        
         // カメラセッションの初期化
         private func initializeSession() {
             DispatchQueue.main.async {
@@ -119,6 +81,43 @@ struct CustomCameraView: UIViewRepresentable {
                 
                 session.startRunning()
             }
+        }
+        // 撮影ボタンのセットアップ
+        private func setupCaptureButton() {
+            captureButton = UIButton(frame: CGRect(x: 0, y: 0, width: 70, height: 70))
+            if let captureButton = captureButton {
+                captureButton.backgroundColor = .white
+                captureButton.layer.cornerRadius = 35
+                captureButton.setTitle("撮影", for: .normal)
+                captureButton.setTitleColor(.black, for: .normal)
+                captureButton.addTarget(self, action: #selector(takePhoto), for: .touchUpInside)
+                self.addSubview(captureButton)
+                self.bringSubviewToFront(captureButton)
+            }
+        }
+        // imageViewのセットアップ
+        private func setupImageView() {
+            imageView = UIImageView(frame: self.bounds)
+            imageView?.contentMode = .scaleAspectFit
+            imageView?.isHidden = true
+            if let imageView = imageView {
+                self.addSubview(imageView)
+                //                print("ImageView added")  // デバッグ情報
+            }
+        }
+
+        // レイアウト調整時の処理
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            
+            // カメラセッションの初期化をビューが表示される直前に行う
+            if self.captureSession == nil {
+                initializeSession()
+            }
+            
+            imageView?.frame = self.bounds  // imageViewのフレームを更新
+            captureButton?.center = CGPoint(x: self.bounds.midX, y: self.bounds.height - 100)
+            self.bringSubviewToFront(captureButton!)
         }
         
         @objc func takePhoto() {
