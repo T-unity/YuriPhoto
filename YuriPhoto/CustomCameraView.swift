@@ -52,6 +52,12 @@ struct CustomCameraView: UIViewRepresentable {
         // レイアウト調整時の処理
         override func layoutSubviews() {
             super.layoutSubviews()
+            
+            // カメラセッションの初期化をビューが表示される直前に行う
+            if self.captureSession == nil {
+                initializeSession()
+            }
+
             imageView?.frame = self.bounds  // imageViewのフレームを更新
             captureButton?.center = CGPoint(x: self.bounds.midX, y: self.bounds.height - 100)
             self.bringSubviewToFront(captureButton!)
