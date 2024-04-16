@@ -55,30 +55,42 @@ struct CustomCameraView: UIViewRepresentable {
         }
         // カメラセッションの初期化
         private func initializeSession() {
+            // AVCaptureSession のリソース消費が大きいため非同期実行。
             DispatchQueue.main.async {
+                // https://developer.apple.com/documentation/avfoundation/avcapturesession
                 self.captureSession = AVCaptureSession()
-                guard let session = self.captureSession, let backCamera = AVCaptureDevice.default(for: .video),
-                      let input = try? AVCaptureDeviceInput(device: backCamera) else {
+
+                // 入力デバイスのAPIコールに失敗した場合、早期リターン
+                guard
+                    let session = self.captureSession,
+                    let backCamera = AVCaptureDevice.default(for: .video),
+                    let input = try? AVCaptureDeviceInput(device: backCamera)
+                else {
                     return
                 }
                 
+                // https://developer.apple.com/documentation/avfoundation/avcapturesession/1387180-canaddinput
                 if session.canAddInput(input) {
                     session.addInput(input)
                 }
                 
+                // https://developer.apple.com/documentation/avfoundation/avcapturesession/1388944-canaddoutput
                 if session.canAddOutput(self.photoOutput) {
                     session.addOutput(self.photoOutput)
                 }
                 
+                // https://developer.apple.com/documentation/avfoundation/avcapturevideopreviewlayer
                 self.previewLayer = AVCaptureVideoPreviewLayer(session: session)
                 guard let previewLayer = self.previewLayer else { return }
                 
+                // https://qiita.com/tanaka-tt/items/0b2df30e1c79638580f7
                 previewLayer.frame = self.bounds
                 previewLayer.videoGravity = .resizeAspectFill
                 DispatchQueue.main.async {
                     self.layer.addSublayer(previewLayer)
                 }
                 
+                // https://developer.apple.com/documentation/avfoundation/avcapturesession/1388185-startrunning
                 session.startRunning()
             }
         }
