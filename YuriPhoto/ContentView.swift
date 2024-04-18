@@ -29,8 +29,13 @@ struct ContentView: View {
 }
 
 // SwiftUIでUIViewを使えるようにするための構造体
+// https://developer.apple.com/documentation/swiftui/uiviewrepresentable
 struct CustomCameraView: UIViewRepresentable {
     // UIViewを継承したカスタムビュークラス。カメラ機能を実装しています。
+    // https://developer.apple.com/documentation/uikit/uiview
+    // https://developer.apple.com/documentation/avfoundation/avcapturephotocapturedelegate
+    // UIViewクラスの継承と AVCapturePhotoCaptureDelegateプロトコルの実装を行なっている。
+    // プロトコル ≒ Goのインターフェースのようなもの。
     class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
         private var captureSession: AVCaptureSession?  // カメラのセッションを管理
         private let photoOutput = AVCapturePhotoOutput()  // 写真の出力を管理
@@ -47,6 +52,7 @@ struct CustomCameraView: UIViewRepresentable {
         
         // 初期化処理
         // CameraUIViewクラスのインスタンスが作成される際に呼び出される
+        // https://developer.apple.com/documentation/corefoundation/cgrect
         override init(frame: CGRect) {
             super.init(frame: frame)
             initializeSession()  // カメラセッションの初期化
@@ -96,13 +102,29 @@ struct CustomCameraView: UIViewRepresentable {
         }
         // 撮影ボタンのセットアップ
         private func setupCaptureButton() {
+            // DEBUG
+            // print("Debug: Class is \(type(of: self))")
+            // print("Debug: self is at memory address: \(Unmanaged.passUnretained(self).toOpaque())")
+            // print("Debug: Current view frame is \(self.frame)")
+            
+            // https://developer.apple.com/documentation/uikit/uibutton
             captureButton = UIButton(frame: CGRect(x: 0, y: 0, width: 70, height: 70))
+            // if let = オプショナルバインディング
+            // 通常UIButtonのインスタンス作成時に nil が返される事はない
             if let captureButton = captureButton {
                 captureButton.backgroundColor = .white
                 captureButton.layer.cornerRadius = 35
                 captureButton.setTitle("撮影", for: .normal)
                 captureButton.setTitleColor(.black, for: .normal)
+
+                // // ボタンのタップイベントに関数を関連付け
                 captureButton.addTarget(self, action: #selector(takePhoto), for: .touchUpInside)
+
+                // ボタンをビューの前面に追加
+                // DEBUG
+                // print("Debug: Class is \(type(of: self))")
+                // print("Debug: self is at memory address: \(Unmanaged.passUnretained(self).toOpaque())")
+                // print("Debug: Current view frame is \(self.frame)")
                 self.addSubview(captureButton)
                 self.bringSubviewToFront(captureButton)
             }
@@ -119,6 +141,7 @@ struct CustomCameraView: UIViewRepresentable {
         }
 
         // レイアウト調整時の処理
+        // https://developer.apple.com/documentation/uikit/uiview/1622482-layoutsubviews
         override func layoutSubviews() {
             super.layoutSubviews()
             
