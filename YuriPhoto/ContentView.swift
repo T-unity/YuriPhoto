@@ -67,40 +67,40 @@ struct CustomCameraView: UIViewRepresentable {
         private func initializeSession() {
             // TODO: 重い処理が多いため軽量化したい。
             // https://developer.apple.com/documentation/avfoundation/avcapturesession
-                self.captureSession = AVCaptureSession()
+            self.captureSession = AVCaptureSession()
 
-                // 入力デバイスのAPIコールに失敗した場合、早期リターン
-                guard
-                    let session = self.captureSession,
-                    let backCamera = AVCaptureDevice.default(for: .video),
-                    let input = try? AVCaptureDeviceInput(device: backCamera)
-                else {
-                    print("Failed to initialize the camera device or input.")
-                    return
-                }
-                
-                // https://developer.apple.com/documentation/avfoundation/avcapturesession/1387180-canaddinput
-                if session.canAddInput(input) {
-                    session.addInput(input)
+            // 入力デバイスのAPIコールに失敗した場合、早期リターン
+            guard
+                let session = self.captureSession,
+                let backCamera = AVCaptureDevice.default(for: .video),
+                let input = try? AVCaptureDeviceInput(device: backCamera)
+            else {
+                print("Failed to initialize the camera device or input.")
+                return
+            }
+            
+            // https://developer.apple.com/documentation/avfoundation/avcapturesession/1387180-canaddinput
+            if session.canAddInput(input) {
+                session.addInput(input)
 //                    print("Input was added to the session.")
-                } else {
-                    print("Cannot add input to the session.")
-                }
-                
-                // https://developer.apple.com/documentation/avfoundation/avcapturesession/1388944-canaddoutput
-                if session.canAddOutput(self.photoOutput) {
-                    session.addOutput(self.photoOutput)
+            } else {
+                print("Cannot add input to the session.")
+            }
+            
+            // https://developer.apple.com/documentation/avfoundation/avcapturesession/1388944-canaddoutput
+            if session.canAddOutput(self.photoOutput) {
+                session.addOutput(self.photoOutput)
 //                    print("Output was added to the session.")
-                } else {
-                    print("Cannot add output to the session.")
-                }
-                
-                // https://developer.apple.com/documentation/avfoundation/avcapturevideopreviewlayer
-                self.previewLayer = AVCaptureVideoPreviewLayer(session: session)
-                guard let previewLayer = self.previewLayer else {
-                    print("Failed to create AVCaptureVideoPreviewLayer.")
-                    return
-                }
+            } else {
+                print("Cannot add output to the session.")
+            }
+            
+            // https://developer.apple.com/documentation/avfoundation/avcapturevideopreviewlayer
+            self.previewLayer = AVCaptureVideoPreviewLayer(session: session)
+            guard let previewLayer = self.previewLayer else {
+                print("Failed to create AVCaptureVideoPreviewLayer.")
+                return
+            }
                 
             // AVCaptureSession のリソース消費が大きいため非同期実行。
             DispatchQueue.main.async {
