@@ -61,9 +61,8 @@ struct CustomCameraView: UIViewRepresentable {
         }
         // カメラセッションの初期化
         private func initializeSession() {
-            // AVCaptureSession のリソース消費が大きいため非同期実行。
-            DispatchQueue.main.async {
-                // https://developer.apple.com/documentation/avfoundation/avcapturesession
+            // TODO: 重い処理が多いため軽量化したい。
+            // https://developer.apple.com/documentation/avfoundation/avcapturesession
                 self.captureSession = AVCaptureSession()
 
                 // 入力デバイスのAPIコールに失敗した場合、早期リターン
@@ -99,12 +98,14 @@ struct CustomCameraView: UIViewRepresentable {
                     return
                 }
                 
+            // AVCaptureSession のリソース消費が大きいため非同期実行。
+            DispatchQueue.main.async {
                 // https://qiita.com/tanaka-tt/items/0b2df30e1c79638580f7
                 previewLayer.frame = self.bounds
                 previewLayer.videoGravity = .resizeAspectFill
                 self.layer.addSublayer(previewLayer)
-//                print("Preview layer was added to the view.")
-                
+                // print("Preview layer was added to the view.")
+
                 // https://developer.apple.com/documentation/avfoundation/avcapturesession/1388185-startrunning
                 session.startRunning()
 //                print("Session is running.")
