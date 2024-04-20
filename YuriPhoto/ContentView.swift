@@ -86,7 +86,6 @@ struct CustomCameraView: UIViewRepresentable {
             } else {
                 print("Cannot add input to the session.")
             }
-            
             // https://developer.apple.com/documentation/avfoundation/avcapturesession/1388944-canaddoutput
             if session.canAddOutput(self.photoOutput) {
                 session.addOutput(self.photoOutput)
@@ -187,6 +186,7 @@ struct CustomCameraView: UIViewRepresentable {
             // フィルターボタンの位置を撮影ボタンの左に配置
             if let filterButton = self.viewWithTag(101) as? UIButton {
                 filterButton.frame = CGRect(x: captureButton!.frame.minX - buttonWidth - buttonSpacing, y: captureButton!.frame.minY, width: buttonWidth, height: buttonHeight)
+                filterButton.isHidden = imageView?.isHidden ?? true
                 self.bringSubviewToFront(filterButton)
                 print("Filter button adjusted with frame: \(filterButton.frame)")
             } else {
@@ -283,8 +283,11 @@ struct CustomCameraView: UIViewRepresentable {
             print("Image saved: \(imageToSave)")
             
             DispatchQueue.main.async {
-                // 画像を非表示にし、カメラプレビューを再表示する
+                // 画像とフィルターボタンを非表示にし、カメラプレビューを再表示する
                 self.imageView?.isHidden = true
+                if let filterButton = self.viewWithTag(101) as? UIButton {
+                    filterButton.isHidden = true
+                }
                 self.previewLayer?.isHidden = false
                 // カメラセッションを再開する
                 self.captureSession?.startRunning()
