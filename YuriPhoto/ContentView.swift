@@ -142,12 +142,16 @@ struct CustomCameraView: UIViewRepresentable {
         }
         // imageViewのセットアップ
         private func setupImageView() {
+            // https://developer.apple.com/documentation/uikit/uiimageview
             imageView = UIImageView(frame: self.bounds)
             imageView?.contentMode = .scaleAspectFit
-            imageView?.isHidden = true
+            imageView?.isHidden = true // 初期状態では非表示にしておく。
+
             if let imageView = imageView {
+                // UIView.addSubview
+                // https://developer.apple.com/documentation/uikit/uiview/1622616-addsubview
                 self.addSubview(imageView)
-                //                print("ImageView added")  // デバッグ情報
+                // print("ImageView added")  // デバッグ情報
             }
         }
 
@@ -169,13 +173,15 @@ struct CustomCameraView: UIViewRepresentable {
         // 写真撮影
         @objc func takePhoto() {
             // DEBUG
-            print("takePhoto was called")
+            // print("takePhoto was called")
 
             let settings = AVCapturePhotoSettings()
-            print("Photo settings are configured: \(settings)")  // 設定内容をログ出力
+            // 設定内容をログ出力
+            // print("Photo settings are configured: \(settings)")
             
             photoOutput.capturePhoto(with: settings, delegate: self)
-            print("Capture photo request sent to photoOutput")  // 撮影リクエスト送信をログ出力
+            // 撮影リクエスト送信をログ出力
+            // print("Capture photo request sent to photoOutput")
         }
         // 撮影ボタンが押された時のアクション
         @objc func retakePhoto() {
