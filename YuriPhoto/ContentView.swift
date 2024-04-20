@@ -43,6 +43,7 @@ struct CustomCameraView: UIViewRepresentable {
         private let photoOutput = AVCapturePhotoOutput()  // 写真の出力を管理
         private var captureButton: UIButton?  // 撮影ボタン
         private var capturedImage: UIImage?  // 撮影した画像を保持
+        private var filteredImage: UIImage?  // フィルター適用後の画像を保持
         private var imageView: UIImageView?  // 撮影した画像を表示するためのビュー
         private var previewLayer: AVCaptureVideoPreviewLayer?  // カメラからの映像を表示するレイヤー
 
@@ -269,9 +270,13 @@ struct CustomCameraView: UIViewRepresentable {
         
         // 「ダウンロード」ボタンが押された時のアクション
         @objc func savePhoto() {
-            guard let imageToSave = capturedImage else { return }
+            guard let imageToSave = filteredImage ?? capturedImage else {
+                print("No image to save")
+                return
+            }
             // 撮影した画像をフォトライブラリに保存する
             UIImageWriteToSavedPhotosAlbum(imageToSave, nil, nil, nil)
+            print("Image saved: \(imageToSave)")
             
             DispatchQueue.main.async {
                 // 画像を非表示にし、カメラプレビューを再表示する
@@ -298,11 +303,17 @@ struct CustomCameraView: UIViewRepresentable {
             self.bringSubviewToFront(filterButton)
         }
         
+        // 撮影後のフィルター適用メソッド
         @objc func applyFilterAndDisplay() {
             if let originalImage = capturedImage, let filteredImage = applyFilter(to: originalImage) {
                 imageView?.image = filteredImage
+                self.filteredImage = filteredImage  // フィルター適用後の画像を保存
+                print("Filter applied and image updated on screen")
+            } else {
+                print("Failed to apply filter")
             }
         }
+
         // 画像加工用のフィルター処理
         func applyFilter(to image: UIImage) -> UIImage? {
             let context = CIContext()
