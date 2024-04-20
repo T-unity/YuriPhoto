@@ -316,16 +316,20 @@ struct CustomCameraView: UIViewRepresentable {
 
         // 画像加工用のフィルター処理
         func applyFilter(to image: UIImage) -> UIImage? {
-            let context = CIContext()
-            guard let filter = CIFilter(name: "CIPhotoEffectNoir") else { return nil }
-            let ciImage = CIImage(image: image)
+            let context = CIContext(options: nil)
+            
+            // 元の画像からCIImageを作成する際に、画像の向きを保持する
+            guard let ciImage = CIImage(image: image),
+                  let filter = CIFilter(name: "CIPhotoEffectNoir") else { return nil }
+            
             filter.setValue(ciImage, forKey: kCIInputImageKey)
             
-            if let output = filter.outputImage,
-               let cgImage = context.createCGImage(output, from: output.extent) {
-                return UIImage(cgImage: cgImage)
-            }
-            return nil
+            // フィルター処理を実行
+            guard let output = filter.outputImage,
+                  let cgImage = context.createCGImage(output, from: output.extent) else { return nil }
+            
+            // 処理された画像をUIImageに変換する際に、元の画像の向きを指定する
+            return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
         }
     }
     
