@@ -1,5 +1,7 @@
 import SwiftUI
 import AVFoundation
+// 画像加工用フィルター
+import CoreImage
 
 struct ContentView: View {
     @State private var isCameraReady = false  // カメラの準備状態を追跡
@@ -58,6 +60,7 @@ struct CustomCameraView: UIViewRepresentable {
             initializeSession()  // カメラセッションの初期化
             setupCaptureButton()  // 撮影ボタンの設定
             setupImageView()  // imageViewの設定
+            setupFilterButton() // 画像加工
         }
         // カメラセッションの初期化
         private func initializeSession() {
@@ -157,19 +160,48 @@ struct CustomCameraView: UIViewRepresentable {
 
         // レイアウト調整時の処理
         // https://developer.apple.com/documentation/uikit/uiview/1622482-layoutsubviews
+//        override func layoutSubviews() {
+//            super.layoutSubviews()
+//            
+//            // カメラセッションの初期化をビューが表示される直前に行う
+//            if self.captureSession == nil {
+//                initializeSession()
+//            }
+//            
+//            imageView?.frame = self.bounds  // imageViewのフレームを更新
+//            captureButton?.center = CGPoint(x: self.bounds.midX, y: self.bounds.height - 100)
+//            self.bringSubviewToFront(captureButton!)
+//        }
         override func layoutSubviews() {
             super.layoutSubviews()
             
-            // カメラセッションの初期化をビューが表示される直前に行う
-            if self.captureSession == nil {
-                initializeSession()
+            imageView?.frame = self.bounds
+            
+            let buttonWidth: CGFloat = 70
+            let buttonHeight: CGFloat = 70
+            let buttonSpacing: CGFloat = 20  // ボタン間のスペース
+            
+            // 撮影ボタンの位置を中央下部に配置
+            captureButton?.frame = CGRect(x: (self.bounds.width - buttonWidth) / 2, y: self.bounds.height - buttonHeight - 20, width: buttonWidth, height: buttonHeight)
+            
+            // フィルターボタンの位置を撮影ボタンの左に配置
+            if let filterButton = self.viewWithTag(101) as? UIButton {  // 以前に追加したフィルターボタンをタグで特定
+                filterButton.frame = CGRect(x: captureButton!.frame.minX - buttonWidth - buttonSpacing, y: captureButton!.frame.minY, width: buttonWidth, height: buttonHeight)
+            } else {
+                // フィルターボタンが存在しない場合は新たに追加
+                let filterButton = UIButton(frame: CGRect(x: captureButton!.frame.minX - buttonWidth - buttonSpacing, y: captureButton!.frame.minY, width: buttonWidth, height: buttonHeight))
+                filterButton.backgroundColor = .gray
+                filterButton.layer.cornerRadius = 35
+                filterButton.setTitle("フィルター", for: .normal)
+                filterButton.addTarget(self, action: #selector(applyFilterAndDisplay), for: .touchUpInside)
+                filterButton.tag = 101  // タグを設定しておく
+                self.addSubview(filterButton)
+                self.bringSubviewToFront(filterButton)
             }
             
-            imageView?.frame = self.bounds  // imageViewのフレームを更新
-            captureButton?.center = CGPoint(x: self.bounds.midX, y: self.bounds.height - 100)
             self.bringSubviewToFront(captureButton!)
         }
-
+        
         // 写真撮影
         @objc func takePhoto() {
             // DEBUG
@@ -253,7 +285,39 @@ struct CustomCameraView: UIViewRepresentable {
                 self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
             }
         }
+
+        // 撮影ボタン設定時にフィルター適用ボタンも追加
+        private func setupFilterButton() {
+//            let filterButton = UIButton(frame: CGRect(x: 20, y: self.bounds.height - 100, width: 70, height: 70))
+            let filterButton = UIButton(frame: CGRect(x: 20, y: 20, width: 70, height: 70))
+            filterButton.backgroundColor = .gray
+            filterButton.layer.cornerRadius = 35
+            filterButton.setTitle("フィルター", for: .normal)
+            filterButton.addTarget(self, action: #selector(applyFilterAndDisplay), for: .touchUpInside)
+            self.addSubview(filterButton)
+            self.bringSubviewToFront(filterButton)
+        }
+        
+        @objc func applyFilterAndDisplay() {
+            if let originalImage = capturedImage, let filteredImage = applyFilter(to: originalImage) {
+                imageView?.image = filteredImage
+            }
+        }
+        // 画像加工用のフィルター処理
+        func applyFilter(to image: UIImage) -> UIImage? {
+            let context = CIContext()
+            guard let filter = CIFilter(name: "CIPhotoEffectNoir") else { return nil }
+            let ciImage = CIImage(image: image)
+            filter.setValue(ciImage, forKey: kCIInputImageKey)
+            
+            if let output = filter.outputImage,
+               let cgImage = context.createCGImage(output, from: output.extent) {
+                return UIImage(cgImage: cgImage)
+            }
+            return nil
+        }
     }
+    
     
     // UIViewRepresentableプロトコルのメソッド。UIViewを生成して返す。
     func makeUIView(context: Context) -> CameraUIView {
