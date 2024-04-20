@@ -72,32 +72,42 @@ struct CustomCameraView: UIViewRepresentable {
                     let backCamera = AVCaptureDevice.default(for: .video),
                     let input = try? AVCaptureDeviceInput(device: backCamera)
                 else {
+                    print("Failed to initialize the camera device or input.")
                     return
                 }
                 
                 // https://developer.apple.com/documentation/avfoundation/avcapturesession/1387180-canaddinput
                 if session.canAddInput(input) {
                     session.addInput(input)
+//                    print("Input was added to the session.")
+                } else {
+                    print("Cannot add input to the session.")
                 }
                 
                 // https://developer.apple.com/documentation/avfoundation/avcapturesession/1388944-canaddoutput
                 if session.canAddOutput(self.photoOutput) {
                     session.addOutput(self.photoOutput)
+//                    print("Output was added to the session.")
+                } else {
+                    print("Cannot add output to the session.")
                 }
                 
                 // https://developer.apple.com/documentation/avfoundation/avcapturevideopreviewlayer
                 self.previewLayer = AVCaptureVideoPreviewLayer(session: session)
-                guard let previewLayer = self.previewLayer else { return }
+                guard let previewLayer = self.previewLayer else {
+                    print("Failed to create AVCaptureVideoPreviewLayer.")
+                    return
+                }
                 
                 // https://qiita.com/tanaka-tt/items/0b2df30e1c79638580f7
                 previewLayer.frame = self.bounds
                 previewLayer.videoGravity = .resizeAspectFill
-                DispatchQueue.main.async {
-                    self.layer.addSublayer(previewLayer)
-                }
+                self.layer.addSublayer(previewLayer)
+//                print("Preview layer was added to the view.")
                 
                 // https://developer.apple.com/documentation/avfoundation/avcapturesession/1388185-startrunning
                 session.startRunning()
+//                print("Session is running.")
             }
         }
         // 撮影ボタンのセットアップ
@@ -154,30 +164,18 @@ struct CustomCameraView: UIViewRepresentable {
             captureButton?.center = CGPoint(x: self.bounds.midX, y: self.bounds.height - 100)
             self.bringSubviewToFront(captureButton!)
         }
-        
+
+        // 写真撮影
         @objc func takePhoto() {
+            // DEBUG
+            print("takePhoto was called")
+
             let settings = AVCapturePhotoSettings()
-            photoOutput.capturePhoto(with: settings, delegate: self)
-        }
-        
-        // 写真が撮影された後の処理
-        func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-            guard let imageData = photo.fileDataRepresentation(),
-                  let image = UIImage(data: imageData) else { return }
-            self.capturedImage = image
+            print("Photo settings are configured: \(settings)")  // 設定内容をログ出力
             
-            DispatchQueue.main.async {
-                self.imageView?.image = image
-                self.imageView?.isHidden = false
-                self.bringSubviewToFront(self.imageView!)
-                //                print("Image should be visible now")  // デバッグ情報
-                self.previewLayer?.isHidden = true
-                self.captureButton?.setTitle("ダウンロード", for: .normal)
-                self.captureButton?.removeTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
-                self.captureButton?.addTarget(self, action: #selector(self.savePhoto), for: .touchUpInside)
-            }
+            photoOutput.capturePhoto(with: settings, delegate: self)
+            print("Capture photo request sent to photoOutput")  // 撮影リクエスト送信をログ出力
         }
-        
         // 撮影ボタンが押された時のアクション
         @objc func retakePhoto() {
             DispatchQueue.main.async {
@@ -187,6 +185,36 @@ struct CustomCameraView: UIViewRepresentable {
                 self.captureButton?.setTitle("撮影", for: .normal)
                 self.captureButton?.removeTarget(self, action: #selector(self.retakePhoto), for: .touchUpInside)
                 self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
+            }
+        }
+        // 写真が撮影された後の処理
+        func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+            // DEBUG
+            if let error = error {
+                print("Error capturing photo: \(error)")
+            } else {
+                print("Photo captured successfully")
+            }
+
+            guard let imageData = photo.fileDataRepresentation(),
+                  let image = UIImage(data: imageData) else { return }
+            self.capturedImage = image
+
+            // UI更新はメインスレッドで
+            DispatchQueue.main.async {
+                if let imageView = self.imageView {
+                    imageView.image = image
+                    imageView.isHidden = false
+                    self.bringSubviewToFront(imageView)
+                    print("Image should be visible now")
+                } else {
+                    print("imageView is nil")
+                }
+
+                self.previewLayer?.isHidden = true
+                self.captureButton?.setTitle("ダウンロード", for: .normal)
+                self.captureButton?.removeTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
+                self.captureButton?.addTarget(self, action: #selector(self.savePhoto), for: .touchUpInside)
             }
         }
         
