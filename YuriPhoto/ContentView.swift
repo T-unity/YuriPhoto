@@ -175,29 +175,30 @@ struct CustomCameraView: UIViewRepresentable {
 //        }
         override func layoutSubviews() {
             super.layoutSubviews()
-            
             imageView?.frame = self.bounds
             
             let buttonWidth: CGFloat = 70
             let buttonHeight: CGFloat = 70
-            let buttonSpacing: CGFloat = 20  // ボタン間のスペース
+            let buttonSpacing: CGFloat = 20
             
             // 撮影ボタンの位置を中央下部に配置
             captureButton?.frame = CGRect(x: (self.bounds.width - buttonWidth) / 2, y: self.bounds.height - buttonHeight - 20, width: buttonWidth, height: buttonHeight)
             
             // フィルターボタンの位置を撮影ボタンの左に配置
-            if let filterButton = self.viewWithTag(101) as? UIButton {  // 以前に追加したフィルターボタンをタグで特定
+            if let filterButton = self.viewWithTag(101) as? UIButton {
                 filterButton.frame = CGRect(x: captureButton!.frame.minX - buttonWidth - buttonSpacing, y: captureButton!.frame.minY, width: buttonWidth, height: buttonHeight)
+                self.bringSubviewToFront(filterButton)
+                print("Filter button adjusted with frame: \(filterButton.frame)")
             } else {
-                // フィルターボタンが存在しない場合は新たに追加
                 let filterButton = UIButton(frame: CGRect(x: captureButton!.frame.minX - buttonWidth - buttonSpacing, y: captureButton!.frame.minY, width: buttonWidth, height: buttonHeight))
                 filterButton.backgroundColor = .gray
                 filterButton.layer.cornerRadius = 35
                 filterButton.setTitle("フィルター", for: .normal)
                 filterButton.addTarget(self, action: #selector(applyFilterAndDisplay), for: .touchUpInside)
-                filterButton.tag = 101  // タグを設定しておく
+                filterButton.tag = 101
                 self.addSubview(filterButton)
                 self.bringSubviewToFront(filterButton)
+                print("Filter button created and added with frame: \(filterButton.frame)")
             }
             
             self.bringSubviewToFront(captureButton!)
@@ -237,7 +238,10 @@ struct CustomCameraView: UIViewRepresentable {
             }
 
             guard let imageData = photo.fileDataRepresentation(),
-                  let image = UIImage(data: imageData) else { return }
+                  let image = UIImage(data: imageData) else {
+                print("Failed to convert photo to UIImage.")
+                return
+            }
             self.capturedImage = image
 
             // UI更新はメインスレッドで
@@ -292,15 +296,27 @@ struct CustomCameraView: UIViewRepresentable {
         }
 
         // 撮影ボタン設定時にフィルター適用ボタンも追加
+//        private func setupFilterButton() {
+//            print("Setting up filter button")
+////            let filterButton = UIButton(frame: CGRect(x: 20, y: self.bounds.height - 100, width: 70, height: 70))
+//            let filterButton = UIButton(frame: CGRect(x: 20, y: 20, width: 70, height: 70))
+//            filterButton.backgroundColor = .gray
+//            filterButton.layer.cornerRadius = 35
+//            filterButton.setTitle("フィルター", for: .normal)
+//            filterButton.addTarget(self, action: #selector(applyFilterAndDisplay), for: .touchUpInside)
+//            self.addSubview(filterButton)
+//            self.bringSubviewToFront(filterButton)
+//            print("Filter button added with frame: \(filterButton.frame)")
+//        }
+        // フィルターボタンの初期化をsetupメソッドに移動し、初期状態で隠れないようにします。
         private func setupFilterButton() {
-//            let filterButton = UIButton(frame: CGRect(x: 20, y: self.bounds.height - 100, width: 70, height: 70))
             let filterButton = UIButton(frame: CGRect(x: 20, y: 20, width: 70, height: 70))
             filterButton.backgroundColor = .gray
             filterButton.layer.cornerRadius = 35
             filterButton.setTitle("フィルター", for: .normal)
             filterButton.addTarget(self, action: #selector(applyFilterAndDisplay), for: .touchUpInside)
+            filterButton.tag = 101  // ボタンにタグを設定
             self.addSubview(filterButton)
-            self.bringSubviewToFront(filterButton)
         }
         
         // 撮影後のフィルター適用メソッド
@@ -317,7 +333,7 @@ struct CustomCameraView: UIViewRepresentable {
         // 画像加工用のフィルター処理
         func applyFilter(to image: UIImage) -> UIImage? {
             let context = CIContext(options: nil)
-            
+
             // 元の画像からCIImageを作成する際に、画像の向きを保持する
             guard let ciImage = CIImage(image: image),
                   let filter = CIFilter(name: "CIPhotoEffectNoir") else { return nil }
