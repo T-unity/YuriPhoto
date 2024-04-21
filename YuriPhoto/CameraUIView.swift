@@ -91,8 +91,10 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
         if let captureButton = captureButton {
             captureButton.backgroundColor = .white
             captureButton.layer.cornerRadius = 35
-            captureButton.setTitle("撮影", for: .normal)
-            captureButton.setTitleColor(.black, for: .normal)
+//            captureButton.setTitle("撮影", for: .normal)
+//            captureButton.setTitleColor(.black, for: .normal)
+            let iconImage = UIImage(named: "shutter")
+            captureButton.setImage(iconImage, for: .normal)
             
             // // ボタンのタップイベントに関数を関連付け
             captureButton.addTarget(self, action: #selector(takePhoto), for: .touchUpInside)
@@ -165,7 +167,11 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             self.imageView?.isHidden = true
             self.previewLayer?.isHidden = false
             self.captureSession?.startRunning()
-            self.captureButton?.setTitle("撮影", for: .normal)
+//            self.captureButton?.setTitle("撮影", for: .normal)
+//            let iconImage = UIImage(named: "shutter")
+//            self.captureButton?.setImage(iconImage, for: .normal)
+            
+
             self.captureButton?.removeTarget(self, action: #selector(self.retakePhoto), for: .touchUpInside)
             self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
         }
@@ -198,7 +204,11 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             }
             
             self.previewLayer?.isHidden = true
-            self.captureButton?.setTitle("ダウンロード", for: .normal)
+//            self.captureButton?.setTitle("ダウンロード", for: .normal)
+            // ボタンの画像を変更
+            let downloadIcon = UIImage(named: "download")  // Assets.xcassetsから参照
+            self.captureButton?.setImage(downloadIcon, for: .normal)
+
             self.captureButton?.removeTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
             self.captureButton?.addTarget(self, action: #selector(self.savePhoto), for: .touchUpInside)
         }
@@ -208,13 +218,13 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
         DispatchQueue.main.async {
             // 画像を非表示にし、ボタンを再撮影用に設定
             self.imageView?.isHidden = true
-            self.captureButton?.setTitle("撮影", for: .normal)
+//            self.captureButton?.setTitle("撮影", for: .normal)
             self.captureButton?.removeTarget(self, action: #selector(self.hideImage), for: .touchUpInside)
             self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
         }
     }
     
-    // 「ダウンロード」ボタンが押された時のアクション
+    // ダウンロードボタンが押された時のアクション
     @objc func savePhoto() {
         guard let imageToSave = filteredImage ?? capturedImage else {
             print("No image to save")
@@ -234,7 +244,10 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             // カメラセッションを再開する
             self.captureSession?.startRunning()
             // ボタンのタイトルを「撮影」に戻し、アクションを撮影に設定する
-            self.captureButton?.setTitle("撮影", for: .normal)
+//            self.captureButton?.setTitle("撮影", for: .normal)
+            let iconImage = UIImage(named: "shutter")
+            self.captureButton?.setImage(iconImage, for: .normal)
+
             self.captureButton?.removeTarget(self, action: #selector(self.savePhoto), for: .touchUpInside)
             self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
         }
