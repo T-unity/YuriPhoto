@@ -14,14 +14,15 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
     private var filteredImage: UIImage?  // フィルター適用後の画像を保持
     private var imageView: UIImageView?  // 撮影した画像を表示するためのビュー
     private var previewLayer: AVCaptureVideoPreviewLayer?  // カメラからの映像を表示するレイヤー
-    
+
+    ////////////////////////////////////////////
+    //  初期化処理
+    ////////////////////////////////////////////
     // コンポーネントの初期化に関する制御
     // StoryboardやXIBからのビルドは不可
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // 初期化処理
     // CameraUIViewクラスのインスタンスが作成される際に呼び出される
     // https://developer.apple.com/documentation/corefoundation/cgrect
     override init(frame: CGRect) {
@@ -82,42 +83,22 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             //                print("Session is running.")
         }
     }
-    // 撮影ボタンのセットアップ
-    private func setupCaptureButton() {
-        // https://developer.apple.com/documentation/uikit/uibutton
-        captureButton = UIButton(frame: CGRect(x: 0, y: 0, width: 70, height: 70))
-        // if let = オプショナルバインディング
-        // 通常UIButtonのインスタンス作成時に nil が返される事はない
-        if let captureButton = captureButton {
-            captureButton.backgroundColor = .white
-            captureButton.layer.cornerRadius = 35
-//            captureButton.setTitle("撮影", for: .normal)
-//            captureButton.setTitleColor(.black, for: .normal)
-            let iconImage = UIImage(named: "shutter")
-            captureButton.setImage(iconImage, for: .normal)
-            
-            // // ボタンのタップイベントに関数を関連付け
-            captureButton.addTarget(self, action: #selector(takePhoto), for: .touchUpInside)
-            
-            // ボタンをビューの前面に追加
-            self.addSubview(captureButton)
-            self.bringSubviewToFront(captureButton)
-        }
-    }
     // imageViewのセットアップ
     private func setupImageView() {
         // https://developer.apple.com/documentation/uikit/uiimageview
         imageView = UIImageView(frame: self.bounds)
         imageView?.contentMode = .scaleAspectFit
         imageView?.isHidden = true // 初期状態では非表示にしておく。
-        
+
         if let imageView = imageView {
             // https://developer.apple.com/documentation/uikit/uiview/1622616-addsubview
             self.addSubview(imageView)
         }
     }
-    
-    // レイアウト調整時の処理
+
+    ////////////////////////////////////////////
+    // レイアウト調整
+    ////////////////////////////////////////////
     // https://developer.apple.com/documentation/uikit/uiview/1622482-layoutsubviews
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -126,10 +107,18 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
         let buttonWidth: CGFloat = 70
         let buttonHeight: CGFloat = 70
         let buttonSpacing: CGFloat = 20
-        
+
         // 撮影ボタンの位置を中央下部に配置
         captureButton?.frame = CGRect(x: (self.bounds.width - buttonWidth) / 2, y: self.bounds.height - buttonHeight - 20, width: buttonWidth, height: buttonHeight)
-        
+
+        // 保存せずに撮影モードに戻るボタンの配置
+        if let retakeButton = self.viewWithTag(102) as? UIButton {
+            retakeButton.frame = CGRect(x: captureButton!.frame.maxX + 20, y: captureButton!.frame.minY, width: 70, height: 70)
+            retakeButton.isHidden = imageView?.isHidden ?? true  // imageViewが表示されているときのみボタンを表示
+        } else {
+            setupRetakeButton()
+        }
+
         // フィルターボタンの位置を撮影ボタンの左に配置
         if let filterButton = self.viewWithTag(101) as? UIButton {
             filterButton.frame = CGRect(x: captureButton!.frame.minX - buttonWidth - buttonSpacing, y: captureButton!.frame.minY, width: buttonWidth, height: buttonHeight)
@@ -147,31 +136,71 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             self.bringSubviewToFront(filterButton)
             print("Filter button created and added with frame: \(filterButton.frame)")
         }
-        
+
         self.bringSubviewToFront(captureButton!)
     }
-    
+
+    ////////////////////////////////////////////
+    // ボタンのセットアップ
+    ////////////////////////////////////////////
+    // 撮影ボタンのセットアップ
+    private func setupCaptureButton() {
+        // https://developer.apple.com/documentation/uikit/uibutton
+        captureButton = UIButton(frame: CGRect(x: 0, y: 0, width: 70, height: 70))
+        // if let = オプショナルバインディング
+        // 通常UIButtonのインスタンス作成時に nil が返される事はない
+        if let captureButton = captureButton {
+            captureButton.backgroundColor = .white
+            captureButton.layer.cornerRadius = 35
+            //            captureButton.setTitle("撮影", for: .normal)
+            //            captureButton.setTitleColor(.black, for: .normal)
+            let iconImage = UIImage(named: "shutter")
+            captureButton.setImage(iconImage, for: .normal)
+            
+            // // ボタンのタップイベントに関数を関連付け
+            captureButton.addTarget(self, action: #selector(takePhoto), for: .touchUpInside)
+            
+            // ボタンをビューの前面に追加
+            self.addSubview(captureButton)
+            self.bringSubviewToFront(captureButton)
+        }
+    }
+    // 撮影ボタン設定時にフィルター適用ボタンも追加
+    // フィルターボタンの初期化をsetupメソッドに移動し、初期状態で隠れないようにする。
+    private func setupFilterButton() {
+        let filterButton = UIButton(frame: CGRect(x: 20, y: 20, width: 70, height: 70))
+        filterButton.backgroundColor = .gray
+        filterButton.layer.cornerRadius = 35
+        filterButton.setTitle("フィルター", for: .normal)
+        filterButton.addTarget(self, action: #selector(applyFilterAndDisplay), for: .touchUpInside)
+        filterButton.tag = 101  // ボタンにタグを設定
+        self.addSubview(filterButton)
+    }
+    private func setupRetakeButton() {
+        let retakeButton = UIButton(frame: CGRect(x: 20, y: 20, width: 70, height: 70))
+        retakeButton.backgroundColor = .red
+        retakeButton.layer.cornerRadius = 35
+        let retakeIcon = UIImage(named: "retakeIcon")  // 'retakeIcon'はAssets.xcassetsに追加した画像の名前
+        retakeButton.setImage(retakeIcon, for: .normal)
+        
+        retakeButton.addTarget(self, action: #selector(hideImage), for: .touchUpInside)
+        retakeButton.tag = 102  // ボタンにタグを設定
+        self.addSubview(retakeButton)
+    }
+    ////////////////////////////////////////////
     // 写真撮影
+    ////////////////////////////////////////////
+    // 写真を撮影する。
     @objc func takePhoto() {
-        // DEBUG
-        // print("takePhoto was called")
-        
         let settings = AVCapturePhotoSettings()
-        
-        
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
-    // 撮影ボタンが押された時のアクション
+    // 写真撮影後のレビュー状態から再び写真撮影ができる状態へとUIをリセットする
     @objc func retakePhoto() {
         DispatchQueue.main.async {
             self.imageView?.isHidden = true
             self.previewLayer?.isHidden = false
             self.captureSession?.startRunning()
-//            self.captureButton?.setTitle("撮影", for: .normal)
-//            let iconImage = UIImage(named: "shutter")
-//            self.captureButton?.setImage(iconImage, for: .normal)
-            
-
             self.captureButton?.removeTarget(self, action: #selector(self.retakePhoto), for: .touchUpInside)
             self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
         }
@@ -204,27 +233,19 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             }
             
             self.previewLayer?.isHidden = true
-//            self.captureButton?.setTitle("ダウンロード", for: .normal)
+            //            self.captureButton?.setTitle("ダウンロード", for: .normal)
             // ボタンの画像を変更
             let downloadIcon = UIImage(named: "download")  // Assets.xcassetsから参照
             self.captureButton?.setImage(downloadIcon, for: .normal)
-
+            
             self.captureButton?.removeTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
             self.captureButton?.addTarget(self, action: #selector(self.savePhoto), for: .touchUpInside)
         }
     }
-    
-    @objc func hideImage() {
-        DispatchQueue.main.async {
-            // 画像を非表示にし、ボタンを再撮影用に設定
-            self.imageView?.isHidden = true
-//            self.captureButton?.setTitle("撮影", for: .normal)
-            self.captureButton?.removeTarget(self, action: #selector(self.hideImage), for: .touchUpInside)
-            self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
-        }
-    }
-    
-    // ダウンロードボタンが押された時のアクション
+    ////////////////////////////////////////////
+    // 画像の保存
+    ////////////////////////////////////////////
+    // ダウンロードボタンが押された時
     @objc func savePhoto() {
         guard let imageToSave = filteredImage ?? capturedImage else {
             print("No image to save")
@@ -244,27 +265,35 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             // カメラセッションを再開する
             self.captureSession?.startRunning()
             // ボタンのタイトルを「撮影」に戻し、アクションを撮影に設定する
-//            self.captureButton?.setTitle("撮影", for: .normal)
+            //            self.captureButton?.setTitle("撮影", for: .normal)
             let iconImage = UIImage(named: "shutter")
             self.captureButton?.setImage(iconImage, for: .normal)
-
+            
             self.captureButton?.removeTarget(self, action: #selector(self.savePhoto), for: .touchUpInside)
             self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
         }
     }
-    
-    // 撮影ボタン設定時にフィルター適用ボタンも追加
-    // フィルターボタンの初期化をsetupメソッドに移動し、初期状態で隠れないようにする。
-    private func setupFilterButton() {
-        let filterButton = UIButton(frame: CGRect(x: 20, y: 20, width: 70, height: 70))
-        filterButton.backgroundColor = .gray
-        filterButton.layer.cornerRadius = 35
-        filterButton.setTitle("フィルター", for: .normal)
-        filterButton.addTarget(self, action: #selector(applyFilterAndDisplay), for: .touchUpInside)
-        filterButton.tag = 101  // ボタンにタグを設定
-        self.addSubview(filterButton)
+    // 画像を保存せずに撮影モードに戻る。
+    @objc func hideImage() {
+        DispatchQueue.main.async {
+            // 画像を非表示にし、ボタンを再撮影用に設定
+            self.imageView?.isHidden = true
+            self.previewLayer?.isHidden = false
+            self.captureSession?.startRunning()
+            self.captureButton?.setImage(UIImage(named: "captureIcon"), for: .normal)
+            self.captureButton?.removeTarget(self, action: #selector(self.hideImage), for: .touchUpInside)
+            self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
+            
+            // 新しく追加したボタンを非表示に
+            if let retakeButton = self.viewWithTag(102) as? UIButton {
+                retakeButton.isHidden = true
+            }
+        }
     }
-    
+
+    ////////////////////////////////////////////
+    // フィルター
+    ////////////////////////////////////////////
     // 撮影後のフィルター適用メソッド
     @objc func applyFilterAndDisplay() {
         if let originalImage = capturedImage, let filteredImage = applyFilter(to: originalImage) {
@@ -275,7 +304,6 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             print("Failed to apply filter")
         }
     }
-    
     // 画像加工用のフィルター処理
     func applyFilter(to image: UIImage) -> UIImage? {
         let context = CIContext(options: nil)
