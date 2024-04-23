@@ -17,6 +17,7 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
     private var filteredImage: UIImage?  // フィルター適用後の画像を保持
     private var imageView: UIImageView?  // 撮影した画像を表示するためのビュー
     private var previewLayer: AVCaptureVideoPreviewLayer?  // カメラからの映像を表示するレイヤー
+    private var currentCameraPosition: AVCaptureDevice.Position = .back // フロント、バックどちらのカメラを使用するか
 
     ////////////////////////////////////////////
     //  初期化処理
@@ -34,6 +35,7 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
         setupCaptureButton()  // 撮影ボタンの設定
         setupImageView()  // imageViewの設定
         setupFilterButton() // 画像加工
+        setupCameraSwitchButton() // カメラ切り替えボタンの追加
     }
     // カメラセッションの初期化
     private func initializeSession() {
@@ -122,6 +124,11 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
         } else {
             setupRetakeButton()
         }
+        
+        // レイアウト調整が行われるたびにボタンを最前面に
+        if let switchButton = self.viewWithTag(103) as? UIButton {
+            self.bringSubviewToFront(switchButton)
+        }
 
         // フィルターボタンの位置を撮影ボタンの左に配置
         if let filterButton = self.viewWithTag(101) as? UIButton {
@@ -193,6 +200,46 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
         self.addSubview(retakeButton)
     }
     ////////////////////////////////////////////
+    // フロントとバックのカメラを切り替える
+    ////////////////////////////////////////////
+    private func setupCameraSwitchButton() {
+        let switchButton = UIButton(frame: CGRect(x: 20, y: 70, width: 70, height: 70))
+        switchButton.backgroundColor = .gray
+        switchButton.layer.cornerRadius = 35
+        switchButton.setTitle("切替", for: .normal)
+        switchButton.addTarget(self, action: #selector(switchCamera), for: .touchUpInside)
+        switchButton.tag = 103  // ボタンにタグを設定
+        self.addSubview(switchButton)
+        self.bringSubviewToFront(switchButton)  // ボタンを最前面に移動
+    }
+    @objc func switchCamera() {
+        // セッションの一時停止
+        captureSession?.stopRunning()
+
+        // 現在のカメラ入力を取り除く
+        if let inputs = captureSession?.inputs as? [AVCaptureDeviceInput] {
+            for input in inputs {
+                captureSession?.removeInput(input)
+            }
+        }
+        
+        // 使用するカメラの切り替え
+        let newPosition: AVCaptureDevice.Position = (currentCameraPosition == .back) ? .front : .back
+        currentCameraPosition = newPosition
+        let newCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: newPosition)
+        
+        do {
+            let newInput = try AVCaptureDeviceInput(device: newCamera!)
+            captureSession?.addInput(newInput)
+        } catch {
+            print("Failed to switch cameras: \(error)")
+            return
+        }
+        
+        // セッション再開
+        captureSession?.startRunning()
+    }
+    ////////////////////////////////////////////
     // 写真撮影
     ////////////////////////////////////////////
     // 写真を撮影する。
@@ -234,6 +281,11 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
                 print("Image should be visible now")
             } else {
                 print("imageView is nil")
+            }
+            
+            // カメラ切り替えボタンを非表示に
+            if let switchButton = self.viewWithTag(103) as? UIButton {
+                switchButton.isHidden = true
             }
             
             self.previewLayer?.isHidden = true
@@ -289,9 +341,13 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             self.captureButton?.removeTarget(self, action: #selector(self.hideImage), for: .touchUpInside)
             self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
             
-            // 新しく追加したボタンを非表示に
+            // 保存せず撮影に戻るボタンを非表示
             if let retakeButton = self.viewWithTag(102) as? UIButton {
                 retakeButton.isHidden = true
+            }
+            // カメラ切り替えボタンを表示
+            if let switchButton = self.viewWithTag(103) as? UIButton {
+                switchButton.isHidden = false
             }
         }
     }
