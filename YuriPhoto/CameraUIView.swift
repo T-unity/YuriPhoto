@@ -7,6 +7,9 @@ import AVFoundation
 // UIViewクラスの継承と AVCapturePhotoCaptureDelegateプロトコルの実装を行なっている。
 // プロトコル ≒ Goのインターフェースのようなもの。
 class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
+    ////////////////////////////////////////////
+    // 変数定義
+    ////////////////////////////////////////////
     private var captureSession: AVCaptureSession?  // カメラのセッションを管理
     private let photoOutput = AVCapturePhotoOutput()  // 写真の出力を管理
     private var captureButton: UIButton?  // 撮影ボタン
@@ -115,6 +118,7 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
         if let retakeButton = self.viewWithTag(102) as? UIButton {
             retakeButton.frame = CGRect(x: captureButton!.frame.maxX + 20, y: captureButton!.frame.minY, width: 70, height: 70)
             retakeButton.isHidden = imageView?.isHidden ?? true  // imageViewが表示されているときのみボタンを表示
+            self.bringSubviewToFront(retakeButton)
         } else {
             setupRetakeButton()
         }
@@ -176,11 +180,12 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
         filterButton.tag = 101  // ボタンにタグを設定
         self.addSubview(filterButton)
     }
+    // 画像を保存せずに再撮影するためのボタン
     private func setupRetakeButton() {
         let retakeButton = UIButton(frame: CGRect(x: 20, y: 20, width: 70, height: 70))
-        retakeButton.backgroundColor = .red
+        retakeButton.backgroundColor = .white
         retakeButton.layer.cornerRadius = 35
-        let retakeIcon = UIImage(named: "retakeIcon")  // 'retakeIcon'はAssets.xcassetsに追加した画像の名前
+        let retakeIcon = UIImage(named: "retake")
         retakeButton.setImage(retakeIcon, for: .normal)
         
         retakeButton.addTarget(self, action: #selector(hideImage), for: .touchUpInside)
@@ -220,8 +225,7 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             return
         }
         self.capturedImage = image
-        
-        // UI更新はメインスレッドで
+        // UI更新はメインスレッドで行う
         DispatchQueue.main.async {
             if let imageView = self.imageView {
                 imageView.image = image
@@ -233,7 +237,7 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             }
             
             self.previewLayer?.isHidden = true
-            //            self.captureButton?.setTitle("ダウンロード", for: .normal)
+            // self.captureButton?.setTitle("ダウンロード", for: .normal)
             // ボタンの画像を変更
             let downloadIcon = UIImage(named: "download")  // Assets.xcassetsから参照
             self.captureButton?.setImage(downloadIcon, for: .normal)
@@ -242,6 +246,7 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             self.captureButton?.addTarget(self, action: #selector(self.savePhoto), for: .touchUpInside)
         }
     }
+    
     ////////////////////////////////////////////
     // 画像の保存
     ////////////////////////////////////////////
@@ -280,7 +285,7 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             self.imageView?.isHidden = true
             self.previewLayer?.isHidden = false
             self.captureSession?.startRunning()
-            self.captureButton?.setImage(UIImage(named: "captureIcon"), for: .normal)
+            self.captureButton?.setImage(UIImage(named: "shutter"), for: .normal)
             self.captureButton?.removeTarget(self, action: #selector(self.hideImage), for: .touchUpInside)
             self.captureButton?.addTarget(self, action: #selector(self.takePhoto), for: .touchUpInside)
             
