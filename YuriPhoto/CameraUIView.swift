@@ -271,11 +271,27 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             print("Failed to convert photo to UIImage.")
             return
         }
-        self.capturedImage = image
+        
+        guard let imageData = photo.fileDataRepresentation(),
+              let image = UIImage(data: imageData) else {
+            print("Failed to convert photo to UIImage.")
+            return
+        }
+        
+        // フロントカメラの場合、画像を反転させる
+        var processedImage = image
+        if currentCameraPosition == .front, let cgImage = image.cgImage {
+            processedImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: .leftMirrored)
+        }
+        
+        // 反転処理後の画像をcapturedImageに保存
+        self.capturedImage = processedImage
+        
         // UI更新はメインスレッドで行う
         DispatchQueue.main.async {
             if let imageView = self.imageView {
-                imageView.image = image
+                // imageView.image = image
+                imageView.image = self.capturedImage
                 imageView.isHidden = false
                 self.bringSubviewToFront(imageView)
                 print("Image should be visible now")
@@ -289,8 +305,6 @@ class CameraUIView: UIView, AVCapturePhotoCaptureDelegate {
             }
             
             self.previewLayer?.isHidden = true
-            // self.captureButton?.setTitle("ダウンロード", for: .normal)
-            // ボタンの画像を変更
             let downloadIcon = UIImage(named: "download")  // Assets.xcassetsから参照
             self.captureButton?.setImage(downloadIcon, for: .normal)
             
